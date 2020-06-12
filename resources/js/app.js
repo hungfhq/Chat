@@ -7,11 +7,18 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
-
+// 
 import Vue from 'vue'
 import VueChatScroll from 'vue-chat-scroll'
 Vue.use(VueChatScroll)
-
+// 
+import Toaster from 'v-toaster'
+ 
+// You need a specific loader for CSS files like https://github.com/webpack/css-loader
+import 'v-toaster/dist/v-toaster.css'
+ 
+// optional set default imeout, the default is 10000 (10 seconds).
+Vue.use(Toaster, {timeout: 1000})
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -41,7 +48,8 @@ const app = new Vue({
             color:[],
             time:[]
         },
-        typing: ''
+        typing: '',
+        numberOfUsers: 0
     },
     watch: {
         message() {
@@ -59,7 +67,8 @@ const app = new Vue({
                 this.chat.color.push('success');
                 this.chat.time.push(this.getTime());
                 axios.post('/send', {
-                    message: this.message
+                    message: this.message,
+                    chat: this.chat
                 })
                 .then((response) => {
                     console.log(response);
@@ -73,16 +82,44 @@ const app = new Vue({
         getTime() {
             let time = new Date();
             return time.getHours() + ':' + time.getMinutes();
+        },
+        getOldMessages() {
+            axios.get('/getOldMessages')
+            .then(response => {
+                console.log('getOldMessages');
+                console.log(response);
+                if(response.data != '') {
+                    this.chat = response.data;
+                }
+            })
+        },
+        deleteSession() {
+            axios.post('/deleteSession')
+            .then(response => {
+                console.log(response);
+                this.chat.message = [];
+                this.$toaster.info('cleared');
+            });
         }
     },
     mounted() {
+        this.getOldMessages();
         Echo.private('chat')
         .listen('ChatEvent', (e) => {
             console.log(e);
             this.chat.message.push(e.message);
             this.chat.user.push(e.user);
-            this.chat.color.push('warning');
+            this.chat.color.push('primary');
             this.chat.time.push(this.getTime());
+            axios.post('/saveToSession', {
+                chat: this.chat
+            })
+            .then(response => {
+                console.log('saveToSession', response);
+            })
+            .catch(error => {
+                console.log(error);
+            })
         })
         .listenForWhisper('typing', (e) => {
             if (e.name != '') {
@@ -93,13 +130,18 @@ const app = new Vue({
         });
         Echo.join('chat')
         .here(users => {
-
+            // console.log(users);
+            this.numberOfUsers = users.length;
         })
         .joining(user => {
-            console.log(user.name);
+            // console.log(user.name);
+            this.$toaster.success(user.name + ' joined.')
+            this.numberOfUsers++;
         })
         .leaving(user => {
-            console.log(user.name);
+            // console.log(user.name);
+            this.$toaster.info(user.name + ' disconnected.')
+            this.numberOfUsers--;
         })
     } // end mounted
 });

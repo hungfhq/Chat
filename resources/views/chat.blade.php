@@ -4,7 +4,11 @@
   <div class="container" id="app">
     <div class="row">
       <div class="col-lg-4 col-md-4 col-sm-8 offset-sm-1 offset-4">
-        <li class="list-group-item active">Chat room</li>
+        <li class="list-group-item active">
+          Chat room 
+          <span class="badge badge-success">@{{numberOfUsers}}</span>
+          <span class="btn btn-sm btn-success float-right" v-on:click='deleteSession'>Clear</span>
+        </li>
         <span class="badge badge-pill badge-primary">@{{typing}}</span>
         <ul class="list-group" id="listGroup" v-chat-scroll>
           <messages 

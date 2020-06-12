@@ -16,9 +16,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/check', function () {
+    return session('chat');
+});
 
 Route::get('/chat', 'ChatController@chat');
 Route::post('/send', 'ChatController@send');
+Route::get('/getOldMessages', 'ChatController@getOldMessages');
+Route::post('/saveToSession', 'ChatController@saveToSession');
+Route::post('/deleteSession', 'ChatController@deleteSession');
 
 Auth::routes();
 
