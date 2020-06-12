@@ -6,3 +6,9 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+// custom
+#listGroup {
+  overflow-y: scroll;
+  height: 100px;
+}

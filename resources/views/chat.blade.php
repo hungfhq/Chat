@@ -1,26 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Laravel Chat</title>
-  <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-  <style>
-    .list-group {
-      overflow-y: scroll;
-      height: 100px;
-    }
-  </style>
-</head>
-<body>
+@extends('layouts.app')
+
+@section('content')
   <div class="container" id="app">
     <div class="row">
-      <div class=" col-4">
+      <div class="col-lg-4 col-md-4 col-sm-8 offset-sm-1 offset-4">
         <li class="list-group-item active">Chat room</li>
-        <ul class="list-group" v-chat-scroll>
-          <messages v-for="value in chat.message" :key="value.index" color='success'>
+        <span class="badge badge-pill badge-primary">@{{typing}}</span>
+        <ul class="list-group" id="listGroup" v-chat-scroll>
+          <messages 
+          v-for="value, index in chat.message" 
+          :key=value.index 
+          :color=chat.color[index]
+          :time=chat.time[index]
+          :user=chat.user[index]>
             @{{value}}
           </messages>
         </ul>
@@ -29,6 +21,4 @@
       </div>
     </div>
   </div>
-  <script src="{{ asset('js/app.js') }}"></script>
-</body>
-</html>
+@endsection

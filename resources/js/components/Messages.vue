@@ -1,14 +1,17 @@
 <template>
     <div>
       <li class="list-group-item" :class="liClass"><slot></slot></li>
-      <span class="badge float-right" :class="badgeClass">you</span>
+      <span class="badge float-right" :class="badgeClass">{{ user }}</span>
+      <span class="badge float-right" :class="badgeClass">{{ time }}</span>
     </div>
 </template>
 
 <script>
     export default {
       props: [
-        'color'
+        'color',
+        'user',
+        'time'
       ],
       computed: {
         liClass() {
